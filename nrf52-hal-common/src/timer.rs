@@ -39,7 +39,8 @@ where
         self.0
     }
 
-    /// Enables the interrupt for this timer, external NVIC modification
+    /// Enables the interrupt for this timer, requires external NVIC modification for systems such
+    /// as RTFM
     ///
     /// Enables an interrupt that is fired when the timer reaches the value that
     /// is given as an argument to `start`.
