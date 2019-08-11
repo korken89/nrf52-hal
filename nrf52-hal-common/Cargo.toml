@@ -45,6 +45,11 @@ version = "0.8.0"
 optional = true
 version = "0.8.0"
 
+[dependencies.nrf9160-pac]
+optional = true
+version = "0.1.1"
+package = "nrf91"
+
 [dependencies.embedded-hal]
 features = ["unproven"]
 version = "0.2.1"
@@ -63,3 +68,4 @@ UARTE_DMA_SIZE_32 = []
 UARTE_DMA_SIZE_64 = []
 UARTE_DMA_SIZE_128 = []
 UARTE_DMA_SIZE_255 = []
+9160 = ["nrf9160-pac"]

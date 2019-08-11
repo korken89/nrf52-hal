@@ -11,13 +11,18 @@ pub use nrf52832_pac as target;
 #[cfg(feature = "52840")]
 pub use nrf52840_pac as target;
 
+#[cfg(feature = "9160")]
+pub use nrf9160_pac as target;
+
 pub mod clocks;
 pub mod delay;
 pub mod gpio;
+#[cfg(not(feature="9160"))]
 pub mod rng;
 pub mod rtc;
 pub mod saadc;
 pub mod spim;
+#[cfg(not(feature="9160"))]
 pub mod temp;
 pub mod time;
 pub mod timer;
@@ -40,9 +45,9 @@ pub mod target_constants {
     pub const SRAM_UPPER: usize = 0x3000_0000;
     pub const FORCE_COPY_BUFFER_SIZE: usize = 255;
 }
-#[cfg(feature = "52840")]
+#[cfg(any(feature = "52840", feature="9160"))]
 pub mod target_constants {
-    // NRF52840 16 bits 1..0xFFFF
+    // NRF52840 and NRF9160 16 bits 1..0xFFFF
     pub const EASY_DMA_SIZE: usize = 65535;
     // Limits for Easy DMA - it can only read from data ram
     pub const SRAM_LOWER: usize = 0x2000_0000;
@@ -79,6 +84,7 @@ impl DmaSlice {
 
 pub use crate::clocks::Clocks;
 pub use crate::delay::Delay;
+#[cfg(not(feature="9160"))]
 pub use crate::rng::Rng;
 pub use crate::rtc::Rtc;
 pub use crate::saadc::Saadc;

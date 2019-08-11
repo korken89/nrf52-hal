@@ -1,7 +1,10 @@
 [package]
 name = "twi-ssd1306"
 version = "0.1.0"
-authors = ["James Waples <james@wapl.es>", "Ruben Paz <me@ruben.io>"]
+authors = [
+   "James Waples <james@wapl.es>",
+   "Ruben Paz <me@ruben.io>",
+]
 edition = "2018"
 
 [dependencies]

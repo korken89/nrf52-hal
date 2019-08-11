@@ -4,7 +4,12 @@
 
 use core::ops::Deref;
 
+#[cfg(feature="9160")]
+use crate::target::{timer0_ns as timer0, Interrupt, NVIC, TIMER0_NS as TIMER0, TIMER1_NS as TIMER1, TIMER2_NS as TIMER2};
+
+#[cfg(not(feature="9160"))]
 use crate::target::{timer0, Interrupt, NVIC, TIMER0, TIMER1, TIMER2};
+
 use embedded_hal::{prelude::*, timer};
 use nb::{self, block};
 use void::{unreachable, Void};
@@ -16,12 +21,17 @@ use crate::target::{TIMER3, TIMER4};
 ///
 /// Right now, this is a very basic interface. The timer will always be
 /// hardcoded to a frequency of 1 MHz and 32 bits accuracy.
+///
+/// CC[0] is used for the current/most-recent delay period and CC[1] is used
+/// to grab the current value of the counter at a given instant.
 pub struct Timer<T>(T);
 
 impl<T> Timer<T>
 where
     T: Instance,
 {
+    pub const TICKS_PER_SECOND: u32 = 1_000_000;
+
     pub fn new(timer: T) -> Self {
         timer
             .shorts
@@ -52,9 +62,6 @@ where
     }
 
     /// Clears the interrupt for this timer, external NVIC modification
-    ///
-    /// Enables an interrupt that is fired when the timer reaches the value that
-    /// is given as an argument to `start`.
     pub(crate) fn clear_interrupt(&mut self) {
         // As of this writing, the timer code only uses
         // `cc[0]`/`events_compare[0]`. If the code is extended to use other
@@ -62,6 +69,12 @@ where
 
         // Reset the event, otherwise it will always read `1` from now on.
         self.0.events_compare[0].write(|w| w);
+    }
+
+    /// Return the current value of the counter, by capturing to CC[1].
+    pub fn read(&self) -> u32 {
+        self.0.tasks_capture[1].write(|w| unsafe { w.bits(1) });
+        self.0.cc[1].read().bits()
     }
 
     /// Enables the interrupt for this timer
@@ -113,6 +126,18 @@ where
     where
         Time: Into<Self::Time>,
     {
+        // If the following sequence of events occurs, the COMPARE event will be
+        // set here:
+        // 1. `start` is called.
+        // 2. The timer runs out but `wait` is _not_ called.
+        // 3. `start` is called again
+        //
+        // If that happens, then we need to reset the event here explicitly, as
+        // nothing else this method does will reset the event, and if it's still
+        // active after this method exits, then the next call to `wait` will
+        // return immediately, no matter how much time has actually passed.
+        self.0.events_compare[0].reset();
+
         // Configure timer to trigger EVENTS_COMPARE when given number of cycles
         // is reached.
         self.0.cc[0].write(|w|
