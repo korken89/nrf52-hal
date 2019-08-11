@@ -9,19 +9,11 @@ use core::mem::MaybeUninit;
 use core::ops::Deref;
 use core::sync::atomic::{compiler_fence, Ordering::SeqCst};
 
+#[cfg(feature = "9160")]
+use crate::target::{uarte0_ns as uarte0, UARTE0_NS as UARTE0, UARTE1_NS as UARTE1};
 
-#[cfg(feature="9160")]
-use crate::target::{
-    uarte0_ns as uarte0,
-    UARTE0_NS as UARTE0,
-    UARTE1_NS as UARTE1,
-};
-
-#[cfg(not(feature="9160"))]
-use crate::target::{
-    uarte0,
-    UARTE0,
-};
+#[cfg(not(feature = "9160"))]
+use crate::target::{uarte0, UARTE0};
 
 use crate::gpio::{Floating, Input, Output, Pin, PushPull};
 use crate::prelude::*;
@@ -39,13 +31,7 @@ use heapless::{
 };
 
 // Re-export SVD variants to allow user to directly set values
-pub use uarte0::{
-    baudrate::BAUDRATEW as Baudrate,
-    config::PARITYW as Parity,
-};
-
-// Re-export SVD variants to allow user to directly set values
-pub use crate::target::uarte0::{baudrate::BAUDRATEW as Baudrate, config::PARITYW as Parity};
+pub use uarte0::{baudrate::BAUDRATEW as Baudrate, config::PARITYW as Parity};
 
 /// Interface to a UARTE instance
 ///
@@ -837,7 +823,7 @@ impl Instance for UARTE0 {
     }
 }
 
-#[cfg(feature="9160")]
+#[cfg(feature = "9160")]
 impl Instance for UARTE1 {
     fn ptr() -> *const uarte0::RegisterBlock {
         UARTE1::ptr()
