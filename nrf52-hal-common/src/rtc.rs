@@ -107,6 +107,30 @@ where
         nvic.disable(T::INTERRUPT);
     }
 
+    /// Enable the generation of a hardware interrupt from a given stimulus, external NVIC control
+    pub fn enable_interrupt_generation(&mut self, int: RtcInterrupt) {
+        match int {
+            RtcInterrupt::Tick => self.periph.intenset.write(|w| w.tick().set()),
+            RtcInterrupt::Overflow => self.periph.intenset.write(|w| w.ovrflw().set()),
+            RtcInterrupt::Compare0 => self.periph.intenset.write(|w| w.compare0().set()),
+            RtcInterrupt::Compare1 => self.periph.intenset.write(|w| w.compare1().set()),
+            RtcInterrupt::Compare2 => self.periph.intenset.write(|w| w.compare2().set()),
+            RtcInterrupt::Compare3 => self.periph.intenset.write(|w| w.compare3().set()),
+        }
+    }
+
+    /// Disable the generation of a hardware interrupt from a given stimulus, external NVIC control
+    pub fn disable_interrupt_generation(&mut self, int: RtcInterrupt) {
+        match int {
+            RtcInterrupt::Tick => self.periph.intenclr.write(|w| w.tick().clear()),
+            RtcInterrupt::Overflow => self.periph.intenclr.write(|w| w.ovrflw().clear()),
+            RtcInterrupt::Compare0 => self.periph.intenclr.write(|w| w.compare0().clear()),
+            RtcInterrupt::Compare1 => self.periph.intenclr.write(|w| w.compare1().clear()),
+            RtcInterrupt::Compare2 => self.periph.intenclr.write(|w| w.compare2().clear()),
+            RtcInterrupt::Compare3 => self.periph.intenclr.write(|w| w.compare3().clear()),
+        }
+    }
+
     /// Enable the generation of a hardware event from a given stimulus
     pub fn enable_event(&mut self, evt: RtcInterrupt) {
         match evt {
