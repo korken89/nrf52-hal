@@ -5,10 +5,10 @@
 use crate::target::{nvmc, NVMC};
 use core::{ops::Deref, ptr};
 
-// As per Figure 4: Memory layout
-const PAGE_SIZE_BYTES: usize = 0x1000;
+// The size of each flash page, as per Figure: Memory layout
+pub const PAGE_SIZE_BYTES: usize = 0x1000;
 
-// As per Figure 4: Memory layout
+// As per Figure: Memory layout
 const BLOCK_SIZE_BYTES: usize = PAGE_SIZE_BYTES / 8;
 
 /// The number of flash memory pages
