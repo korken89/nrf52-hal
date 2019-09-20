@@ -13,6 +13,7 @@ members = [
   "examples/rtfm-demo",
   "examples/rtfm-uarte-interrupts",
   "examples/spi-demo",
+  "examples/nvmc-demo",
   "examples/twi-ssd1306",
 ]
 

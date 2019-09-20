@@ -17,6 +17,7 @@ pub use nrf9160_pac as target;
 pub mod clocks;
 pub mod delay;
 pub mod gpio;
+pub mod nvmc;
 #[cfg(not(feature = "9160"))]
 pub mod rng;
 pub mod rtc;
